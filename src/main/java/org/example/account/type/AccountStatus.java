@@ -1,4 +1,4 @@
-package org.example.account.domain;
+package org.example.account.type;
 
 public enum AccountStatus {
     IN_USER,        // 계좌 사용중
