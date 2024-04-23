@@ -14,26 +14,31 @@ import java.util.Objects;
 @Configuration
 public class LocalRedisConfig {
 
+    // RedisRepositoryConfig 보다 먼저 떠있어야 정상 실행된다.
+    // 아래 2가지 방법으로 해결할 수 있다. 이 프로젝트에서는 2번방법이 적용됨
+    // 1. LocalRedisConfig가 있는 패키지 이름이 RedisRepositoryConfig가 있는 패키지 이름보다 알파벳 순으로 더 앞에 있어야함
+    // 2. 만약 두 파일의 패키지가 동일하면 파일 이름이 알파벳순으로 더 빠른 파일을 먼저 스캔하게 됨
+
     @Value("${spring.data.redis.port}")     // application.yml에 있는 해당 값을 가져와 redisPort에 저장
     private int redisPort;
 
     private RedisServer redisServer;
 
-    @PostConstruct      // 스프링빈의 초기화 작업. 해당 빈이 생성된 후 딱 1번 호출. 여기서는 LocalRedisConfig가 빈으로 생성된 후에 호출된다.
-    public void startRedis() {
-        try {
-            if (isArmMac()) {
-                redisServer = new RedisServer(getRedisFileForArcMac(), redisPort);
-            } else {
-                redisServer = RedisServer.builder()
-                        .port(redisPort)
-                        .setting("maxmemory 128M")
-                        .build();
-            }
+    @PostConstruct      // 스프링빈의 초기화 작업. 해당 빈이 생성된 후 딱 1번 호출. LocalRedisConfig가 빈으로 생성될 때 호출됨
+    public void startRedis() throws IOException {
+        if (isArmMac()) {
+            redisServer = new RedisServer(getRedisFileForArcMac(), redisPort);
+        } else {
+            redisServer = RedisServer.builder()
+                    .port(redisPort)
+                    .setting("maxmemory 128M")
+                    .build();
+        }
 
+        try {
             redisServer.start();
-        } catch (IOException | RuntimeException e) {
-//            throw new IllegalStateException("Failed to start Redis server.", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to start Redis server.", e);
         }
     }
 
@@ -44,7 +49,7 @@ public class LocalRedisConfig {
         }
     }
 
-    /**
+    /*
      * 현재 시스템이 ARM 아키텍처를 사용하는 MAC인지 확인
      * System.getProperty("os.arch") : JVM이 실행되는 시스템 아키텍처 반환
      * System.getProperty("os.name") : 시스템 이름 반환
@@ -54,7 +59,7 @@ public class LocalRedisConfig {
                 && Objects.equals(System.getProperty("os.name"), "Mac OS X");
     }
 
-    /**
+    /*
      * ARM 아키텍처를 사용하는 Mac에서 실행할 수 있는 Redis 바이너리 파일을 반환
      */
     private File getRedisFileForArcMac() throws IOException {
