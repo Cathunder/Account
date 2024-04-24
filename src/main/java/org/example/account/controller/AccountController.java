@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.account.domain.Account;
 import org.example.account.dto.CreateAccount;
+import org.example.account.dto.DeleteAccount;
 import org.example.account.service.AccountService;
 import org.example.account.service.RedisTestService;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,18 @@ public class AccountController {
                 accountService.createAccount(
                         request.getUserId(),
                         request.getInitialBalance()
+                )
+        );
+    }
+
+    @DeleteMapping("/account")
+    public DeleteAccount.Response deleteAccount(
+            @RequestBody @Valid DeleteAccount.Request request
+    ) {
+        return DeleteAccount.Response.from(
+                accountService.deleteAccount(
+                        request.getUserId(),
+                        request.getAccountNumber()
                 )
         );
     }

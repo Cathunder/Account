@@ -18,4 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     // Account에 AccountUser랑 다대일 관계를 가지고 있기 때문에 계좌 개수 구할 수 있음
     Integer countByAccountUser(AccountUser accountUser);
+
+    Optional<Account> findByAccountNumber(String accountNumber);
 }
