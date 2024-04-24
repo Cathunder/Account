@@ -8,7 +8,9 @@ import lombok.Getter;
 public enum ErrorCode {
 
     // enum 매핑 참고하기
-    USER_NOT_FOUND("사용자가 없습니다.");
+    USER_NOT_FOUND("사용자가 없습니다."),
+    MAX_ACCOUNT_PER_USER_10("사용자 최대 계좌는 10개입니다.")
+    ;
 
     private final String description;
 }

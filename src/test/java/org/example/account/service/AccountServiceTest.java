@@ -1,8 +1,13 @@
 package org.example.account.service;
 
 import org.example.account.domain.Account;
+import org.example.account.domain.AccountUser;
+import org.example.account.dto.AccountDto;
+import org.example.account.exception.AccountException;
+import org.example.account.repository.AccountUserRepository;
 import org.example.account.type.AccountStatus;
 import org.example.account.repository.AccountRepository;
+import org.example.account.type.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +28,119 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)     // mockito 기능을 쓰기위해 추가
 class AccountServiceTest {
 
-    @Mock   // 가짜 accountRepository 생성
+    @Mock   // 가짜 accountRepository 생성 (mock)
     private AccountRepository accountRepository;
 
-    @InjectMocks  // 위에서 생성한 가짜 accountRepository을 주입
+    @Mock
+    private AccountUserRepository accountUserRepository;
+
+    @InjectMocks  // 위에서 생성한 가짜 mock들을 주입
     private AccountService accountService;
 
+    @Test
+    void createAccountSuccess() {
+        //given
+        AccountUser user = AccountUser.builder()
+                .id(12L)
+                .name("Pobi").build();
+
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.of(user));
+
+        given(accountRepository.findFirstByOrderByIdDesc())
+                .willReturn(Optional.of(Account.builder()
+                                .accountNumber("1000000012").build()));
+
+        given(accountRepository.save(any()))
+                .willReturn(Account.builder()
+                        .accountUser(user)
+                        .accountNumber("1000000015").build());  // 임의의 값 리턴. 테스트와 관련x
+
+        ArgumentCaptor<Account> captor = ArgumentCaptor.forClass(Account.class);
+
+        //when
+        AccountDto accountDto = accountService.createAccount(1L, 1000L);
+
+        //then
+        verify(accountRepository, times(1)).save(captor.capture());
+        assertEquals(12L, accountDto.getUserId());
+        assertEquals("1000000013", captor.getValue().getAccountNumber());
+    }
+
+    @Test
+    void createFirstAccount() {
+        //given
+        AccountUser user = AccountUser.builder()
+                .id(15L)
+                .name("Pobi").build();
+
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.of(user));
+
+        given(accountRepository.findFirstByOrderByIdDesc())
+                .willReturn(Optional.empty());
+
+        given(accountRepository.save(any()))
+                .willReturn(Account.builder()
+                        .accountUser(user)
+                        .accountNumber("1000000015").build());
+
+        ArgumentCaptor<Account> captor = ArgumentCaptor.forClass(Account.class);
+
+        //when
+        AccountDto accountDto = accountService.createAccount(1L, 1000L);
+
+        //then
+        verify(accountRepository, times(1)).save(captor.capture());
+        assertEquals(15L, accountDto.getUserId());
+        assertEquals("1000000000", captor.getValue().getAccountNumber());
+    }
+
+    @Test
+    @DisplayName("해당 유저 없음 - 계좌 생성 실패")
+    void createAccount_UserNotFound() {
+        //given
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        AccountException exception = assertThrows(AccountException.class,
+                () -> accountService.createAccount(1L, 1000L));
+
+        //then
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("유저당 최대 계좌는 10개")
+    void createAccount_maxAccountIs10() {
+        //given
+        AccountUser user = AccountUser.builder()
+                .id(15L)
+                .name("Pobi").build();
+
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.of(user));
+
+        given(accountRepository.countByAccountUser(any()))
+                .willReturn(10);
+
+        //when
+        AccountException exception = assertThrows(AccountException.class,
+                () -> accountService.createAccount(1L, 1000L));
+
+        //then
+        assertEquals(ErrorCode.MAX_ACCOUNT_PER_USER_10, exception.getErrorCode());
+    }
+
+
+
+
+
+
+
+
+    // =========== 아래는 실습용 ===========
     // mokito를 사용하면
     // db내 데이터의 변경, accountRepository 코드 변경과는 상관없이
     // getAccount() 테스트만 진행할 수 있게 됨

@@ -17,16 +17,14 @@ public class AccountController {
 
     @PostMapping("/account")
     public CreateAccount.Response createAccount(
-                @RequestBody
-                @Valid // 객체 유효성 검사
-                CreateAccount.Request request
-            ) {
-        accountService.createAccount(
-                request.getUserId(),
-                request.getInitialBalance()
+            @RequestBody @Valid CreateAccount.Request request
+    ) {
+        return CreateAccount.Response.from(
+                accountService.createAccount(
+                        request.getUserId(),
+                        request.getInitialBalance()
+                )
         );
-
-        return null;
     }
 
     @GetMapping("/get-lock")
