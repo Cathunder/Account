@@ -13,11 +13,14 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // 스프링 데이터 JPA
     // extends JpaRepository<엔티티의 이름, PK의 타입>
     // 이 interface는 Account 테이블(엔티티)에 접속하기 위한 interface
+    // 메서드명대로 쿼리를 알아서 생성해줌
 
-    Optional<Account> findFirstByOrderByIdDesc(); // 메서드명대로 쿼리를 알아서 생성해줌
+    Optional<Account> findFirstByOrderByIdDesc();
 
     // Account에 AccountUser랑 다대일 관계를 가지고 있기 때문에 계좌 개수 구할 수 있음
     Integer countByAccountUser(AccountUser accountUser);
 
     Optional<Account> findByAccountNumber(String accountNumber);
+
+    List<Account> findByAccountUser(AccountUser accountUser);
 }
