@@ -2,7 +2,9 @@ package org.example.account.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.account.exception.AccountException;
 import org.example.account.type.AccountStatus;
+import org.example.account.type.ErrorCode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -36,4 +38,12 @@ public class Account {      // Account 테이블 생성
     private LocalDateTime createdAt;
     @LastModifiedDate           // 시간을 자동으로 추가해줌
     private LocalDateTime updatedAt;
+
+    public void useBalance(Long amount) {
+        if (amount > balance) {
+            throw new AccountException(ErrorCode.AMOUNT_EXCEED_BALANCE);
+        }
+
+        balance -= amount;
+    }
 }

@@ -1,6 +1,6 @@
 package org.example.account.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import  com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.account.domain.Account;
 import org.example.account.dto.AccountDto;
 import org.example.account.dto.CreateAccount;
@@ -61,7 +61,7 @@ class AccountControllerTest {
         //then
         mockMvc.perform(post("/account")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(
+                        .content(objectMapper.writeValueAsString(
                                 new CreateAccount.Request(3333L, 1111L)
                         )))     // content: controller에 들어오는 request
                 .andExpect(status().isOk())

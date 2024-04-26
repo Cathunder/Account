@@ -37,14 +37,13 @@ public class AccountService {
      * 계좌를 저장하고
      * 그 정보를 넘긴다.
      */
-    @Transactional
-    // createAccount()를 하나의 트랜잭션으로 묶어서 실행. 중간에 예외가 발생하면 롤백되어 모든 변경 사항이 취소됨
+    @Transactional  // createAccount()를 하나의 트랜잭션으로 묶어서 실행. 중간에 예외가 발생하면 롤백되어 모든 변경 사항이 취소됨
     public AccountDto createAccount(Long userId, Long initialBalance) {
         // 리턴타입이 엔티티(Account)가 아닌 AccountDto로 바꿔 사용하는 이유
         // 컨트롤러로 반환하는 정보가 Account 정보중 일부가 될 수도 있고 더 많을 수도 있다.
         // 그러나 엔티티는 db와 1:1 매칭되는 관계이기 때문에 수정할 수가 없다.
         // + 트랜젝션 문제도 해결가능하다고 함
-        // 그래서 AccountDto로 만들어 사용한다.
+        // 즉, 내가 원하는 데이터만 사용하고 이를 통해 각자의 책임에 맞는 로직만 수행할 수 있게된다.
 
         AccountUser accountUser = accountUserRepository.findById(userId)
                 .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
