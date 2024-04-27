@@ -49,7 +49,7 @@ public class CancelBalance {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class  Response {
+    public static class Response {
         private String accountNumber;
         private TransactionResultType transactionResult;
         private String transactionId;
