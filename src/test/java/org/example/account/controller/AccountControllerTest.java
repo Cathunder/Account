@@ -5,9 +5,12 @@ import org.example.account.domain.Account;
 import org.example.account.dto.AccountDto;
 import org.example.account.dto.CreateAccount;
 import org.example.account.dto.DeleteAccount;
+import org.example.account.exception.AccountException;
 import org.example.account.service.AccountService;
 import org.example.account.service.RedisTestService;
 import org.example.account.type.AccountStatus;
+import org.example.account.type.ErrorCode;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -141,6 +144,23 @@ class AccountControllerTest {
                 .andDo(print())     // request, response 출력
                 .andExpect(jsonPath("$.accountNumber").value("3456"))
                 .andExpect(jsonPath("$.accountStatus").value("IN_USER"))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @DisplayName("일관성 있는 예외처리 확인 테스트")
+    void failGetAccount() throws Exception {
+        //given
+        given(accountService.getAccount(anyLong()))
+                .willThrow(new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        //when
+        //then
+        mockMvc.perform(get("/account/876"))
+                .andDo(print())
+                .andExpect(jsonPath("$.errorCode").value("ACCOUNT_NOT_FOUND"))
+                .andExpect(jsonPath("$.errorMessage").value("계좌가 없습니다."))
                 .andExpect(status().isOk());
 
     }

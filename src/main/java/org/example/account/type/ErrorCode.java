@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ErrorCode {
 
     // enum 매핑 참고하기
+    INTERNAL_SERVER_ERROR("내부 서버 오류가 발생했습니다."),
     INVALID_REQUEST("잘못된 요청입니다."),
     USER_NOT_FOUND("사용자가 없습니다."),
     ACCOUNT_NOT_FOUND("계좌가 없습니다."),
