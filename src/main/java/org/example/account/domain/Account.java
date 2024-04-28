@@ -17,11 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@EntityListeners(AuditingEntityListener.class)      // Auditing 기능을 사용하기 위해 필요 (@CreatedDate, @LastModifiedDate)
-public class Account {      // Account 테이블 생성
-    @Id                 // PK로 설정
-    @GeneratedValue     // PK값 자동으로 +1
-    private Long id;
+public class Account extends BaseEntity {      // Account 테이블 생성
 
     @ManyToOne      // 다대일 관계 설정. (Account, Account, Account) - (AccountUser)
     private AccountUser accountUser;
@@ -33,11 +29,6 @@ public class Account {      // Account 테이블 생성
 
     private LocalDateTime registeredAt;
     private LocalDateTime unRegisteredAt;
-
-    @CreatedDate                // 시간을 자동으로 추가해줌
-    private LocalDateTime createdAt;
-    @LastModifiedDate           // 시간을 자동으로 추가해줌
-    private LocalDateTime updatedAt;
 
     public void useBalance(Long amount) {
         if (amount > balance) {

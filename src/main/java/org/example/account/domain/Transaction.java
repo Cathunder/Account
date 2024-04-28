@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.account.type.TransactionResultType;
 import org.example.account.type.TransactionType;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -16,12 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-public class Transaction {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Transaction extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
@@ -35,9 +27,4 @@ public class Transaction {
 
     private String transactionId;       // 보안 등의 이유로 id대신 transactionId를 사용해야함
     private LocalDateTime transactedAt;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }
