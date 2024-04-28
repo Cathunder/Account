@@ -7,7 +7,6 @@ import org.example.account.dto.CreateAccount;
 import org.example.account.dto.DeleteAccount;
 import org.example.account.exception.AccountException;
 import org.example.account.service.AccountService;
-import org.example.account.service.RedisTestService;
 import org.example.account.type.AccountStatus;
 import org.example.account.type.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -38,9 +37,6 @@ class AccountControllerTest {
     // 때문에 주입 코드를 작성하지 않는다.
     @MockBean
     private AccountService accountService;
-
-    @MockBean
-    private RedisTestService redisTestService;
 
     // @WebMvcTest는 mockMVC를 제공하고 있음
     @Autowired

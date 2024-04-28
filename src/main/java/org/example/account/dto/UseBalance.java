@@ -2,17 +2,18 @@ package org.example.account.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.example.account.aop.AccountLockIdInterface;
 import org.example.account.type.TransactionResultType;
 
 import java.time.LocalDateTime;
 
 public class UseBalance {
 
-    @Getter
+    @Getter         // getter가 있기 때문에 인터페이스의 구현체를 구현한 것이나 마찬가지
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Request {
+    public static class Request implements AccountLockIdInterface{
         @NotNull
         @Min(1)
         private Long userId;
@@ -32,7 +33,7 @@ public class UseBalance {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class  Response {
+    public static class Response {
         private String accountNumber;
         private TransactionResultType transactionResult;
         private String transactionId;
